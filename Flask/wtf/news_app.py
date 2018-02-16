@@ -1,8 +1,12 @@
-# coding: utf-9
-from flask import flask
-
+# coding: utf-8
+from flask import Flask
 from blueprints.noticias import noticias_blueprint
 
-app = Flask("wtf")
-app.confg.from_object('settings')
-app.register_blueprint(noticias_blueprint, url_prefix='/portal')
+def create_app(config_filename=None):
+    app = Flask("wtf")
+    if config_filename:
+        app.config.from_pyfile(config_filename)
+
+    app.register_blueprint(noticias_blueprint)
+
+    return app
