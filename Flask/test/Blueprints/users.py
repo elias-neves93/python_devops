@@ -1,28 +1,48 @@
-from flask import Blueprint,jsonify
+from flask import Blueprint,jsonify,request
+from model import Users
+import json
 
 users = Blueprint("users",__name__)
 
-@users.route("/usuarios/")
+@users.route("/usuarios/", methods=["GET"])
 def list_users():
-    data = {"message":"Aqui serão listados todos os usuarios"}
-    return jsonify(data)
+    list_users = json.loads(Users.objects.to_json())
+    return jsonify({"usuarios":list_users})
 
 @users.route("/usuarios/",methods=["POST"])
 def add_users():
-    data = {"message":"Aqui serão cadastrado novos usuarios"}
-    return jsonify(data)
+    try:
+        data = request.get_json()
+        u = Users()
+        for key in data.keys():
+            setattr(u,key,data[key])
+        u.save()
+        return jsonify({"message":"Usuario cadastrado com sucesso!"})
+    except Exception as e:
+        return jsonify({"message":"Falhou ao cadastrar: {}".format(e)})
 
-@users.route("/usuarios/<int:id>",methods=["GET"])
+@users.route("/usuarios/<id>",methods=["GET"])
 def select_users(id):
-    data = {"message":"Mostrat usuario de acordo com o id: {}".format(id)}
+    u = json.loads(Users.objects(id=id).to_json())
+    data = {"usuario":u}
     return jsonify(data)
 
-@users.route("/usuarios/<int:id>",methods=["PUT"])
+@users.route("/usuarios/<id>",methods=["PUT"])
 def update_users(id):
-    data = {"message":"Atualizar usuario id: {}".format(id)}
-    return jsonify(data)
+    try:
+        data = requests.get_json()
+        u = Users.objects(id=id).first()
+        for key in data.keys():
+            setattr(u,key,data[key])
+        u.save()
+        dados = {"message":"Atualizando o usuario ID: ".format(id)}
+        return jsonify(dados)
+    except Exception as e:
+        return jsonify({"message":"Falhou ao atualizar: ".format(e)})
 
-@users.route("/usuarios/<int:id>",methods=["DELETE"])
+@users.route("/usuarios/<id>",methods=["DELETE"])
 def delete_users(id):
+    u = Users.objects(id=id)
+    u.delete()
     data = {"message":"Deletar usuario id: {}".format(id)}
     return jsonify(data)
