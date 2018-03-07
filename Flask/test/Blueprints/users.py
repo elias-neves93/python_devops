@@ -30,7 +30,7 @@ def select_users(id):
 @users.route("/usuarios/<id>",methods=["PUT"])
 def update_users(id):
     try:
-        data = requests.get_json()
+        data = request.get_json()
         u = Users.objects(id=id).first()
         for key in data.keys():
             setattr(u,key,data[key])

@@ -11,7 +11,7 @@ app.register_blueprint(users)
 
 @app.route("/")
 def index():
-    return "Response Flask"
+    return "<h1> Response Flask </h1>"
 
 if __name__ == "__main__":
     app.run(debug=True)

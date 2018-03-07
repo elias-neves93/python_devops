@@ -1,28 +1,48 @@
-from flask import Blueprint,jsonify
+from flask import Blueprint,jsonify,request
+from model import Groups
+import json
 
 groups = Blueprint("groups",__name__)
 
-@groups.route("/grupos/")
+@groups.route("/grupos/", methods=["GET"])
 def list_groups():
-    data = {"message":"Aqui serão listados todos os groups"}
-    return jsonify(data)
+    list_groups = json.loads(Groups.objects.to_json())
+    return jsonify({"message":list_groups})
 
 @groups.route("/grupos/",methods=["POST"])
 def add_groups():
-    data = {"message":"Aqui serão cadastrado novos groups"}
-    return jsonify(data)
+    try:
+        data = request.get_json()
+        g = Groups()
+        for key in data.keys():
+            setattr(g,key,data[key])
+        g.save()
+        return jsonify({"message":"Grupo cadastrado com sucesso!"})
+    except Exception as e:
+        return jsonify({"message":"Falhou ao cadastrar grupo: {}".format(e)})
 
-@groups.route("/grupos/<int:id>",methods=["GET"])
+@groups.route("/grupos/<id>",methods=["GET"])
 def select_groups(id):
-    data = {"message":"Mostrat groupo de acordo com o id: {}".format(id)}
+    g = json.loads(Groups.objects(id=id).to_json())
+    data = {"grupo":g}
     return jsonify(data)
 
-@groups.route("/grupos/<int:id>",methods=["PUT"])
+@groups.route("/grupos/<id>",methods=["PUT"])
 def update_groups(id):
-    data = {"message":"Atualizar grupo id: {}".format(id)}
-    return jsonify(data)
+    try:
+        data = request.get_json()
+        g = Groups.objects(id=id).first()
+        for key in data.keys():
+            setattr(g,key,data[key])
+        g.save()
+        dados = {"message":"Atualizando o grupo ID: ".format(id)}
+        return jsonify(dados)
+    except Exception as e:
+        return jsonify({"message":"Falhou ao atualizar: ".format(e)})
 
-@groups.route("/grupos/<int:id>",methods=["DELETE"])
+@groups.route("/grupos/<id>",methods=["DELETE"])
 def delete_groups(id):
+    g = Groups.objects(id=id)
+    g.delete()
     data = {"message":"Deletar grupo id: {}".format(id)}
     return jsonify(data)
