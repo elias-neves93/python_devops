@@ -25,12 +25,12 @@ class Groups(db.Document):
 
 if __name__ == "__main__":
     u = Users()
-    u.nome = "Elias"
-    u.email = "elias-neves93@hotmail.com"
+    u.nome = "Teste"
+    u.email = "teste-neves93@hotmail.com"
     u.save()
     print ("Usuario cadastrado com sucesso!!")
-    #g = Groups()
-    #g.nome = "T.I"
-    #g.integrantes.append(u)
-    #g.save()
-    #print("Grupo cadastrado")
+    g = Groups()
+    g.nome = "Comercial"
+    g.integrantes.append(u)
+    g.save()
+    print("Grupo cadastrado")
